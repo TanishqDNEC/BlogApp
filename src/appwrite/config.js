@@ -1,4 +1,4 @@
-import { Client, Storage,Query, ID, Databases } from "appwrite";
+import { Client, Storage,Query, ID, Databases ,Permission, Role} from "appwrite";
 import conf from "../conf/conf";
 
 
@@ -22,6 +22,7 @@ export class Database{
                 conf.appwriteCollectionId,
                 slug,
                 {
+                    title,
                     content,
                     featuredImage,
                     status,
@@ -104,16 +105,19 @@ export class Database{
 
     //file related service
 
-    async uploadFile(file) {
+    async uploadFile(file,userId) {
         try {
             return await this.bucket.createFile(
                 conf.appwriteBucketId,
                 ID.unique(),
                 file,
-            )
+                [
+                    Permission.read(Role.any()) // 👈 Grants public read access
+                ]
+            );
         } catch (error) {
-            console.log("appwrite error::Storage error:: uploadFile::",error);
-
+            console.log("appwrite error::Storage error:: uploadFile::", error);
+            return null;
         }
     }
 
@@ -130,17 +134,16 @@ export class Database{
         }
     }
 
-    async getFilePreview(fileID) {
+    getFilePreview(fileID) {
         try {
-            return await this.bucket.getFilePreview(
-                conf.appwriteBucketId,
-                fileID
-            );
+            return this.bucket.getFileView(conf.appwriteBucketId, fileID);
         } catch (error) {
-            console.log("appwrite error::Storage error:: getFilePreview::",error);
-
+            console.log("appwrite error:: getFileView::", error);
+            return null;
         }
     }
+    
+    
 
 }
 

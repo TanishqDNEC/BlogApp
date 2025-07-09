@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import service from "../appwrite/config";
@@ -12,7 +11,6 @@ export default function Post() {
     const navigate = useNavigate();
 
     const userData = useSelector((state) => state.auth.userData);
-
     const isAuthor = post && userData ? post.userId === userData.$id : false;
 
     useEffect(() => {
@@ -34,34 +32,40 @@ export default function Post() {
     };
 
     return post ? (
-        <div className="py-8">
+        <div className="min-h-screen py-10 px-4 bg-gray-100 dark:bg-gray-900 transition-colors">
             <Container>
-                <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
-                    <img
-                        src={service.getFilePreview(post.featuredImage)}
-                        alt={post.title}
-                        className="rounded-xl"
-                    />
-
-                    {isAuthor && (
-                        <div className="absolute right-6 top-6">
-                            <Link to={`/edit-post/${post.$id}`}>
-                                <Button bgColor="bg-green-500" className="mr-3">
-                                    Edit
+                <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <div className="relative mb-6">
+                        <img
+                            src={service.getFilePreview(post.featuredImage)}
+                            alt={post.title}
+                            className="w-full h-96 object-cover rounded-xl border border-gray-300 dark:border-gray-700"
+                        />
+                        {isAuthor && (
+                            <div className="absolute top-4 right-4 flex gap-2">
+                                <Link to={`/edit-post/${post.$id}`}>
+                                    <Button
+                                        bgColor="bg-green-600"
+                                        className="hover:bg-green-700 transition-colors"
+                                    >
+                                        Edit
+                                    </Button>
+                                </Link>
+                                <Button
+                                    bgColor="bg-red-600"
+                                    className="hover:bg-red-700 transition-colors"
+                                    onClick={deletePost}
+                                >
+                                    Delete
                                 </Button>
-                            </Link>
-                            <Button bgColor="bg-red-500" onClick={deletePost}>
-                                Delete
-                            </Button>
-                        </div>
-                    )}
-                </div>
-                <div className="w-full mb-6">
-                    <h1 className="text-2xl font-bold">{post.title}</h1>
-                </div>
-                <div className="browser-css">
-                    {parse(post.content)}
+                            </div>
+                        )}
                     </div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{post.title}</h1>
+                    <div className="prose dark:prose-invert max-w-none prose-headings:mb-2 prose-p:mb-3 prose-img:rounded-xl prose-img:my-4">
+                        {parse(post.content)}
+                    </div>
+                </div>
             </Container>
         </div>
     ) : null;

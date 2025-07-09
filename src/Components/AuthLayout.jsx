@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import service from '../appwrite/config';
-import { Container, PostCard } from '../Components';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-function AllPosts() {
-    const [post, setPost] = useState([]);
+export default function Protected({ children, authentication = true }) {
+    const navigate = useNavigate();
+    const [loader, setLoader] = useState(true);
+    const authStatus = useSelector((state) => state.auth.status);
 
     useEffect(() => {
-        service.getPosts([]).then((posts) => {
-            if (posts) setPost(posts.documents);
-        });
-    }, []);
+        if (authentication && authStatus !== authentication) {
+            navigate('/login');
+        } else if (!authentication && authStatus !== authentication) {
+            navigate('/');
+        }
+        setLoader(false);
+    }, [authStatus, navigate, authentication]);
 
-    return (
-        <div className='w-full py-8'>
-            <Container>
-                <div className='flex flex-wrap'>
-                    {post.map((post) => (
-                        <div key={post.$id} className='p-2 w-1/4'>
-                            <PostCard post={post} />
-                        </div>
-                    ))}
-                </div>
-            </Container>
-        </div>
-    );
+    if (loader) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-white dark:bg-zinc-900 transition-all duration-300">
+                <h1 className="text-xl font-semibold text-gray-700 dark:text-gray-200 animate-pulse">
+                    Loading...
+                </h1>
+            </div>
+        );
+    }
+
+    return <>{children}</>;
 }
-
-export default AllPosts;
