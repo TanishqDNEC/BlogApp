@@ -57,7 +57,7 @@ function Home() {
                         You haven’t posted anything yet!
                     </h1>
                     <Button
-                        Children="Create Your First Post"
+                        children="Create Your First Post"
                         className="mx-auto"
                         onClick={() => navigate('/add-post')}
                     />
